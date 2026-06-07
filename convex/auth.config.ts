@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: "https://your-clerk-domain.clerk.accounts.dev",
+      domain: "https://helped-kite-10.clerk.accounts.dev",
       applicationID: "convex",
     },
   ],

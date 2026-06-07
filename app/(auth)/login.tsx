@@ -1,13 +1,22 @@
 import { useSSO } from "@clerk/clerk-expo";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS } from "../../constants/theme";
+import * as WebBrowser from "expo-web-browser";
+import { Text, TouchableOpacity, View } from "react-native";
+import { authStyles as styles } from "../../styles/auth.styles";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const { startSSOFlow } = useSSO();
 
   const handleLogin = async () => {
     try {
-      await startSSOFlow({ strategy: "oauth_google" });
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+      });
+
+      if (createdSessionId) {
+        await setActive?.({ session: createdSessionId });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -17,34 +26,8 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Login with Google</Text>
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Sign in with Google</Text>
+        <Text style={styles.buttonText}>Continue with Google</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.background,
-    padding: 24,
-  },
-  title: {
-    color: COLORS.text,
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  buttonText: {
-    color: COLORS.text,
-    fontWeight: "600",
-  },
-});

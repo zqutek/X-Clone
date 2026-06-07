@@ -11,7 +11,10 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarStyle: {
           backgroundColor: COLORS.background,
-          borderTopColor: COLORS.border,
+          borderTopWidth: 0,
+          elevation: 0,
+          height: 40,
+          position: "absolute",
         },
       }}
     >
@@ -29,7 +32,7 @@ export default function TabsLayout() {
         options={{
           title: "Create",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="add-box" color={color} size={size} />
+            <MaterialIcons name="add-circle-outline" color={color} size={size} />
           ),
         }}
       />
@@ -38,7 +41,7 @@ export default function TabsLayout() {
         options={{
           title: "Notifications",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="notifications" color={color} size={size} />
+            <MaterialIcons name="notifications-none" color={color} size={size} />
           ),
         }}
       />
@@ -47,7 +50,7 @@ export default function TabsLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" color={color} size={size} />
+            <MaterialIcons name="person-outline" color={color} size={size} />
           ),
         }}
       />

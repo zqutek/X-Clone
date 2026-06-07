@@ -11,6 +11,9 @@ export default function InitialLayout() {
     if (!isLoaded) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const inSSOCallback = segments[0] === "sso-callback";
+
+    if (inSSOCallback) return;
 
     if (isSignedIn && inAuthGroup) {
       router.replace("/(tabs)");
