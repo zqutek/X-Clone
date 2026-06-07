@@ -6,6 +6,7 @@ coverage/
 .cache/
 web-build/
 *.log
+*.zip
 
 .env
 .env.local
