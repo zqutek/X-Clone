@@ -17,6 +17,8 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Convex client setup with Clerk auth
 - Convex schema for users, posts, likes, comments, follows, notifications, and bookmarks
 - Clerk webhook that creates Convex users on `user.created`
+- Convex storage upload URL generation
+- Create Post screen with image picker, image preview, caption input, upload state, and post creation
 - Dark themed tab navigation
 - Placeholder screens for Feed, Create, Notifications, and Profile
 - Sign Out button on the Feed screen
@@ -28,6 +30,9 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Expo Router
 - Clerk
 - Convex
+- Expo Image Picker
+- Expo File System
+- Expo Image
 - TypeScript
 
 ## Setup
@@ -79,3 +84,4 @@ EXPO_PUBLIC_CONVEX_URL=
 - In Clerk Dashboard, create a JWT Template named `convex`.
 - In Convex Dashboard, make sure the Clerk domain in `convex/auth.config.ts` matches your Clerk project.
 - After signing in with Google, check the `users` table in Convex Dashboard.
+- To test v3, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
