@@ -106,6 +106,8 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - In Clerk Dashboard, create a JWT Template named `convex`.
 - In Convex Dashboard, make sure the Clerk domain in `convex/auth.config.ts` matches your Clerk project.
 - After signing in with Google, check the `users` table in Convex Dashboard.
+- If Convex mutations fail with `Unauthorized`, re-check that the Clerk JWT Template is named exactly `convex`, redeploy/restart `npx convex dev`, and restart Expo with cache clear.
+- The app also creates the Convex user from the signed-in Clerk session, so the webhook is no longer the only way to populate the `users` table.
 - To test posting, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
 - To test the feed, create at least one post and use the Feed tab to like, bookmark, comment, or delete your own post.
 - To test bookmarks, tap the bookmark icon on a post and open the Bookmarks tab.

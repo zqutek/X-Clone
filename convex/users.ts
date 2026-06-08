@@ -48,6 +48,39 @@ export const createUser = mutation({
   },
 });
 
+export const createAuthenticatedUser = mutation({
+  args: {
+    username: v.string(),
+    fullname: v.string(),
+    email: v.string(),
+    bio: v.optional(v.string()),
+    image: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .first();
+
+    if (existingUser) return existingUser._id;
+
+    return await ctx.db.insert("users", {
+      username: args.username,
+      fullname: args.fullname,
+      email: args.email,
+      bio: args.bio,
+      image: args.image,
+      clerkId: identity.subject,
+      followers: 0,
+      following: 0,
+      posts: 0,
+    });
+  },
+});
+
 export const getUserByClerkId = query({
   args: {
     clerkId: v.string(),

@@ -3,6 +3,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InitialLayout from "../components/InitialLayout";
+import useEnsureConvexUser from "../hooks/useEnsureConvexUser";
 import usePushNotifications from "../hooks/usePushNotifications";
 import ClerkAndConvexProvider from "../providers/ClerkAndConvexProvider";
 
@@ -30,6 +31,7 @@ export default function RootLayout() {
 }
 
 function RootContent() {
+  useEnsureConvexUser();
   usePushNotifications();
 
   return (
