@@ -30,6 +30,7 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Profile links from post authors and notification senders
 - Real stories backed by Convex storage with upload, active story list, viewer modal, progress bar, and view counter
 - Real-time chat with conversation list, one-to-one message screen, and Message buttons on user profiles
+- Push notifications for likes, comments, and follows using expo-notifications, Convex actions, and Expo Push Service
 - Local font loading with Expo Splash Screen
 - Dark themed tab navigation
 
@@ -45,6 +46,7 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Expo Image
 - Expo Font
 - Expo Splash Screen
+- Expo Notifications
 - date-fns
 - TypeScript
 
@@ -84,6 +86,12 @@ Select the `user.created` event.
 npm start
 ```
 
+7. For push notifications on Android, use a development build instead of Expo Go:
+
+```bash
+npx expo run:android
+```
+
 ## Required Environment Variables
 
 ```bash
@@ -106,3 +114,5 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - To test user profiles, tap a post author's avatar or a notification sender avatar, then use Follow/Following.
 - To test stories, tap Add Story in the feed, pick an image, then tap the new story circle to open the viewer.
 - To test chat, open another user's profile, tap Message, send a message, then open Chats from your Profile tab.
+- To test push notifications, sign in on two devices or emulators with different users, allow notifications, then like, comment, or follow from one account and check the other device.
+- Android push notifications require Firebase setup and FCM V1 credentials in EAS for a real device build. Add `google-services.json` and configure EAS credentials outside the repository; do not commit Firebase service account secrets.
