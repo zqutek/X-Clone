@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { getAuthenticatedUser } from "./users";
 
@@ -53,6 +54,8 @@ export const addComment = mutation({
     });
 
     if (post.userId !== currentUser._id) {
+      const receiver = await ctx.db.get(post.userId);
+
       await ctx.db.insert("notifications", {
         receiverId: post.userId,
         senderId: currentUser._id,
@@ -60,6 +63,24 @@ export const addComment = mutation({
         postId: args.postId,
         commentId,
       });
+
+      if (receiver?.pushToken) {
+        await ctx.scheduler.runAfter(
+          0,
+          internal.pushNotifications.sendPushNotification,
+          {
+            pushToken: receiver.pushToken,
+            title: "New reply",
+            body: `@${currentUser.username}: ${content}`,
+            data: {
+              type: "comment",
+              postId: args.postId,
+              commentId,
+              senderId: currentUser._id,
+            },
+          }
+        );
+      }
     }
 
     return commentId;

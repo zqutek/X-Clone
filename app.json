@@ -10,8 +10,17 @@
       "expo-router",
       "expo-image",
       "expo-font",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "expo-notifications"
     ],
+    "android": {
+      "package": "com.nbi41.xclone",
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
     "experiments": {
       "typedRoutes": true
     }
