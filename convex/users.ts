@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
 import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 
 export async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
@@ -85,6 +86,21 @@ export const updateProfile = mutation({
   },
 });
 
+export const savePushToken = mutation({
+  args: {
+    pushToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const currentUser = await getAuthenticatedUser(ctx);
+
+    await ctx.db.patch(currentUser._id, {
+      pushToken: args.pushToken,
+    });
+
+    return true;
+  },
+});
+
 export const isFollowing = query({
   args: {
     followingId: v.id("users"),
@@ -160,6 +176,22 @@ export const toggleFollow = mutation({
       senderId: currentUser._id,
       type: "follow",
     });
+
+    if (targetUser.pushToken) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.pushNotifications.sendPushNotification,
+        {
+          pushToken: targetUser.pushToken,
+          title: "New follower",
+          body: `@${currentUser.username} started following you`,
+          data: {
+            type: "follow",
+            senderId: currentUser._id,
+          },
+        }
+      );
+    }
 
     return true;
   },

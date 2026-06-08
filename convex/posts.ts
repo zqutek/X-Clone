@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { getAuthenticatedUser } from "./users";
 
@@ -162,12 +163,31 @@ export const toggleLike = mutation({
     });
 
     if (post.userId !== currentUser._id) {
+      const receiver = await ctx.db.get(post.userId);
+
       await ctx.db.insert("notifications", {
         receiverId: post.userId,
         senderId: currentUser._id,
         type: "like",
         postId: args.postId,
       });
+
+      if (receiver?.pushToken) {
+        await ctx.scheduler.runAfter(
+          0,
+          internal.pushNotifications.sendPushNotification,
+          {
+            pushToken: receiver.pushToken,
+            title: "New like",
+            body: `@${currentUser.username} liked your post`,
+            data: {
+              type: "like",
+              postId: args.postId,
+              senderId: currentUser._id,
+            },
+          }
+        );
+      }
     }
 
     return true;

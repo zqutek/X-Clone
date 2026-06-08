@@ -3,6 +3,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InitialLayout from "../components/InitialLayout";
+import usePushNotifications from "../hooks/usePushNotifications";
 import ClerkAndConvexProvider from "../providers/ClerkAndConvexProvider";
 
 SplashScreen.preventAutoHideAsync();
@@ -23,9 +24,17 @@ export default function RootLayout() {
 
   return (
     <ClerkAndConvexProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#000000" }}>
-        <InitialLayout />
-      </SafeAreaView>
+      <RootContent />
     </ClerkAndConvexProvider>
+  );
+}
+
+function RootContent() {
+  usePushNotifications();
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#000000" }}>
+      <InitialLayout />
+    </SafeAreaView>
   );
 }
