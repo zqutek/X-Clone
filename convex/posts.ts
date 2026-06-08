@@ -82,6 +82,52 @@ export const getPosts = query({
   },
 });
 
+export const getPostsByUser = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const currentUser = await getAuthenticatedUser(ctx);
+    const targetUserId = args.userId ?? currentUser._id;
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_user", (q) => q.eq("userId", targetUserId))
+      .order("desc")
+      .collect();
+
+    const postsWithAuthors = await Promise.all(
+      posts.map(async (post) => {
+        const author = await ctx.db.get(post.userId);
+        if (!author) return null;
+
+        const like = await ctx.db
+          .query("likes")
+          .withIndex("by_user_and_post", (q) =>
+            q.eq("userId", currentUser._id).eq("postId", post._id)
+          )
+          .first();
+
+        const bookmark = await ctx.db
+          .query("bookmarks")
+          .withIndex("by_both", (q) =>
+            q.eq("userId", currentUser._id).eq("postId", post._id)
+          )
+          .first();
+
+        return {
+          ...post,
+          author,
+          isLiked: !!like,
+          isBookmarked: !!bookmark,
+        };
+      })
+    );
+
+    return postsWithAuthors.filter((post) => post !== null);
+  },
+});
+
 export const toggleLike = mutation({
   args: {
     postId: v.id("posts"),
