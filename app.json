@@ -8,7 +8,9 @@
     "userInterfaceStyle": "dark",
     "plugins": [
       "expo-router",
-      "expo-image"
+      "expo-image",
+      "expo-font",
+      "expo-splash-screen"
     ],
     "experiments": {
       "typedRoutes": true
