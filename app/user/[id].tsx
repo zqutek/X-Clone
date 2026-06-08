@@ -31,6 +31,7 @@ export default function UserProfileScreen() {
   const [isToggling, setIsToggling] = useState(false);
   const [localFollowing, setLocalFollowing] = useState(false);
   const [localFollowers, setLocalFollowers] = useState<number | null>(null);
+  const [isOpeningChat, setIsOpeningChat] = useState(false);
 
   const profile = useQuery(
     api.users.getUserProfile,
@@ -45,6 +46,7 @@ export default function UserProfileScreen() {
     isAuthenticated && userId ? { followingId: userId } : "skip"
   );
   const toggleFollow = useMutation(api.users.toggleFollow);
+  const getOrCreateConversation = useMutation(api.chat.getOrCreateConversation);
 
   useEffect(() => {
     if (profile?.clerkId && profile.clerkId === user?.id) {
@@ -84,6 +86,20 @@ export default function UserProfileScreen() {
       console.error("Error toggling follow:", error);
     } finally {
       setIsToggling(false);
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!userId || isOpeningChat) return;
+
+    try {
+      setIsOpeningChat(true);
+      const conversationId = await getOrCreateConversation({ userId });
+      router.push(`/chat/${conversationId}` as any);
+    } catch (error) {
+      console.error("Error opening chat:", error);
+    } finally {
+      setIsOpeningChat(false);
     }
   };
 
@@ -167,6 +183,15 @@ export default function UserProfileScreen() {
             ]}
           >
             {localFollowing ? "Following" : "Follow"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={isOpeningChat}
+          onPress={handleMessage}
+          style={[styles.messageButton, isOpeningChat && styles.saveButtonDisabled]}
+        >
+          <Text style={styles.messageButtonText}>
+            {isOpeningChat ? "Opening..." : "Message"}
           </Text>
         </TouchableOpacity>
       </View>
