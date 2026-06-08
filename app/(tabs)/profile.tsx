@@ -2,6 +2,7 @@ import { useAuth, useUser } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   FlatList,
@@ -33,6 +34,7 @@ function NoPostsFound() {
 }
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { signOut } = useAuth();
   const { user } = useUser();
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -141,6 +143,12 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
             <MaterialIcons name="ios-share" size={20} color={COLORS.text} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("/chats" as any)}
+            style={styles.shareButton}
+          >
+            <MaterialIcons name="chat-bubble-outline" size={20} color={COLORS.text} />
           </TouchableOpacity>
         </View>
       </View>

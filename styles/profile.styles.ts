@@ -103,6 +103,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  messageButton: {
+    flex: 1,
+    height: 40,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.primary,
+    marginTop: 10,
+  },
+  messageButtonText: {
+    color: COLORS.text,
+    fontWeight: "800",
+  },
   gridContent: {
     paddingBottom: 64,
   },

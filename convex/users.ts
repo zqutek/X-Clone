@@ -164,3 +164,27 @@ export const toggleFollow = mutation({
     return true;
   },
 });
+
+export const getStoriesUsers = query({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const users = await ctx.db.query("users").collect();
+
+    const usersWithStories = await Promise.all(
+      users.map(async (user) => {
+        const story = await ctx.db
+          .query("stories")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .filter((q) => q.gt(q.field("expiresAt"), now))
+          .first();
+
+        return {
+          ...user,
+          hasStory: !!story,
+        };
+      })
+    );
+
+    return usersWithStories;
+  },
+});

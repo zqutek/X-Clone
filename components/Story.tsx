@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles/feed.styles";
 
 type StoryProps = {
@@ -8,11 +8,12 @@ type StoryProps = {
     image: string;
     hasStory: boolean;
   };
+  onPress?: () => void;
 };
 
-export default function Story({ story }: StoryProps) {
+export default function Story({ story, onPress }: StoryProps) {
   return (
-    <View style={styles.storyContainer}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.storyContainer}>
       <View
         style={[
           styles.storyRing,
@@ -24,6 +25,6 @@ export default function Story({ story }: StoryProps) {
       <Text numberOfLines={1} style={styles.storyUsername}>
         {story.username}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
