@@ -25,9 +25,11 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Bookmarks tab with a 3-column grid of saved posts
 - Notifications tab with enriched like, comment, and follow notifications
 - Cascading post deletion for likes, comments, bookmarks, and related notifications
+- Editable Profile tab with avatar, stats, bio, posts grid, post preview modal, and profile edit modal
+- User profile pages for other users with follow/unfollow and posts grid
+- Profile links from post authors and notification senders
 - Local font loading with Expo Splash Screen
 - Dark themed tab navigation
-- Placeholder Profile screen
 
 ## Tech Stack
 
@@ -98,3 +100,5 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - To test the feed, create at least one post and use the Feed tab to like, bookmark, comment, or delete your own post.
 - To test bookmarks, tap the bookmark icon on a post and open the Bookmarks tab.
 - To test notifications, like or comment on another user's post and open the Notifications tab from that user's account.
+- To test your profile, open the Profile tab, edit name/bio, and tap a grid post to preview it.
+- To test user profiles, tap a post author's avatar or a notification sender avatar, then use Follow/Following.
