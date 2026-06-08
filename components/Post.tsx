@@ -3,6 +3,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../convex/_generated/api";
@@ -34,6 +35,7 @@ type PostProps = {
 };
 
 export default function Post({ post }: PostProps) {
+  const router = useRouter();
   const { user } = useUser();
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked);
@@ -46,6 +48,15 @@ export default function Post({ post }: PostProps) {
   const deletePost = useMutation(api.posts.deletePost);
 
   const isOwnPost = user?.id === post.author.clerkId;
+
+  const openAuthorProfile = () => {
+    if (isOwnPost) {
+      router.push("/(tabs)/profile");
+      return;
+    }
+
+    router.push(`/user/${post.author._id}` as any);
+  };
 
   useEffect(() => {
     setIsLiked(post.isLiked);
@@ -100,15 +111,21 @@ export default function Post({ post }: PostProps) {
   return (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
-        <Image source={post.author.image} style={styles.avatar} contentFit="cover" />
-        <View style={styles.postAuthor}>
+        <TouchableOpacity onPress={openAuthorProfile}>
+          <Image source={post.author.image} style={styles.avatar} contentFit="cover" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={openAuthorProfile}
+          style={styles.postAuthor}
+        >
           <Text numberOfLines={1} style={styles.fullname}>
             {post.author.fullname}
           </Text>
           <Text numberOfLines={1} style={styles.username}>
             @{post.author.username}
           </Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={isOwnPost ? confirmDelete : undefined}
           style={styles.iconButton}
