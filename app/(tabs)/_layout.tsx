@@ -46,6 +46,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="bookmarks"
+        options={{
+          title: "Bookmarks",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="bookmark-border" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",

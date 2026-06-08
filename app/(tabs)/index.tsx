@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Loader from "../../components/Loader";
 import Post, { FeedPost } from "../../components/Post";
@@ -11,9 +11,10 @@ import { styles } from "../../styles/feed.styles";
 
 export default function HomeScreen() {
   const { signOut } = useAuth();
-  const posts = useQuery(api.posts.getPosts);
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const posts = useQuery(api.posts.getPosts, isAuthenticated ? {} : "skip");
 
-  if (posts === undefined) {
+  if (isLoading || (isAuthenticated && posts === undefined)) {
     return <Loader />;
   }
 

@@ -22,9 +22,12 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Feed screen with stories, post list, author info, relative time, and sign out
 - Like, bookmark, comment, and delete-post interactions backed by Convex
 - Notifications created for likes and comments on another user's post
+- Bookmarks tab with a 3-column grid of saved posts
+- Notifications tab with enriched like, comment, and follow notifications
+- Cascading post deletion for likes, comments, bookmarks, and related notifications
 - Local font loading with Expo Splash Screen
 - Dark themed tab navigation
-- Placeholder screens for Notifications and Profile
+- Placeholder Profile screen
 
 ## Tech Stack
 
@@ -93,3 +96,5 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - After signing in with Google, check the `users` table in Convex Dashboard.
 - To test posting, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
 - To test the feed, create at least one post and use the Feed tab to like, bookmark, comment, or delete your own post.
+- To test bookmarks, tap the bookmark icon on a post and open the Bookmarks tab.
+- To test notifications, like or comment on another user's post and open the Notifications tab from that user's account.
