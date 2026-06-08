@@ -1,41 +1,45 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useQuery } from "convex/react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import Loader from "../../components/Loader";
+import Post, { FeedPost } from "../../components/Post";
+import StoriesSection from "../../components/StoriesSection";
 import { COLORS } from "../../constants/theme";
+import { api } from "../../convex/_generated/api";
+import { styles } from "../../styles/feed.styles";
 
 export default function HomeScreen() {
   const { signOut } = useAuth();
+  const posts = useQuery(api.posts.getPosts);
+
+  if (posts === undefined) {
+    return <Loader />;
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Feed</Text>
-      <TouchableOpacity style={styles.signOutButton} onPress={() => signOut()}>
-        <Text style={styles.signOutText}>Sign out</Text>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>X Clone</Text>
+        <TouchableOpacity onPress={() => signOut()} style={styles.iconButton}>
+          <MaterialIcons name="logout" size={24} color={COLORS.text} />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        ListEmptyComponent={
+          <View style={styles.emptyFeed}>
+            <Text style={styles.emptyTitle}>No posts yet</Text>
+            <Text style={styles.emptyText}>Create the first post from the Create tab.</Text>
+          </View>
+        }
+        ListHeaderComponent={<StoriesSection />}
+        contentContainerStyle={{ paddingBottom: 60 }}
+        data={posts as FeedPost[]}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => <Post post={item} />}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.background,
-  },
-  title: {
-    color: COLORS.text,
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 20,
-  },
-  signOutButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  signOutText: {
-    color: COLORS.text,
-    fontWeight: "600",
-  },
-});
