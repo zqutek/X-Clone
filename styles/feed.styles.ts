@@ -46,6 +46,17 @@ export const styles = StyleSheet.create({
     width: 72,
     alignItems: "center",
   },
+  addStoryRing: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.surface,
+    marginBottom: 6,
+  },
   storyRing: {
     width: 62,
     height: 62,
@@ -232,5 +243,49 @@ export const styles = StyleSheet.create({
   sendText: {
     color: COLORS.primary,
     fontWeight: "700",
+  },
+  storyViewerContainer: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  storyProgressTrack: {
+    height: 3,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 12,
+    marginTop: 10,
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  storyProgressFill: {
+    height: "100%",
+    backgroundColor: COLORS.text,
+  },
+  storyViewerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  storyViewerAuthor: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 10,
+  },
+  storyViewerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.surface,
+  },
+  storyViewerUsername: {
+    color: COLORS.text,
+    fontWeight: "800",
+  },
+  storyViewerImage: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: COLORS.background,
   },
 });
