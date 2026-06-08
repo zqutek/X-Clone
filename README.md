@@ -19,9 +19,12 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Clerk webhook that creates Convex users on `user.created`
 - Convex storage upload URL generation
 - Create Post screen with image picker, image preview, caption input, upload state, and post creation
+- Feed screen with stories, post list, author info, relative time, and sign out
+- Like, bookmark, comment, and delete-post interactions backed by Convex
+- Notifications created for likes and comments on another user's post
+- Local font loading with Expo Splash Screen
 - Dark themed tab navigation
-- Placeholder screens for Feed, Create, Notifications, and Profile
-- Sign Out button on the Feed screen
+- Placeholder screens for Notifications and Profile
 
 ## Tech Stack
 
@@ -33,6 +36,9 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Expo Image Picker
 - Expo File System
 - Expo Image
+- Expo Font
+- Expo Splash Screen
+- date-fns
 - TypeScript
 
 ## Setup
@@ -76,6 +82,7 @@ npm start
 ```bash
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
 EXPO_PUBLIC_CONVEX_URL=
+EXPO_PUBLIC_CONVEX_SITE_URL=
 ```
 
 ## Notes
@@ -84,4 +91,5 @@ EXPO_PUBLIC_CONVEX_URL=
 - In Clerk Dashboard, create a JWT Template named `convex`.
 - In Convex Dashboard, make sure the Clerk domain in `convex/auth.config.ts` matches your Clerk project.
 - After signing in with Google, check the `users` table in Convex Dashboard.
-- To test v3, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
+- To test posting, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
+- To test the feed, create at least one post and use the Feed tab to like, bookmark, comment, or delete your own post.
