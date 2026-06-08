@@ -28,6 +28,8 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Editable Profile tab with avatar, stats, bio, posts grid, post preview modal, and profile edit modal
 - User profile pages for other users with follow/unfollow and posts grid
 - Profile links from post authors and notification senders
+- Real stories backed by Convex storage with upload, active story list, viewer modal, progress bar, and view counter
+- Real-time chat with conversation list, one-to-one message screen, and Message buttons on user profiles
 - Local font loading with Expo Splash Screen
 - Dark themed tab navigation
 
@@ -102,3 +104,5 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - To test notifications, like or comment on another user's post and open the Notifications tab from that user's account.
 - To test your profile, open the Profile tab, edit name/bio, and tap a grid post to preview it.
 - To test user profiles, tap a post author's avatar or a notification sender avatar, then use Follow/Following.
+- To test stories, tap Add Story in the feed, pick an image, then tap the new story circle to open the viewer.
+- To test chat, open another user's profile, tap Message, send a message, then open Chats from your Profile tab.
