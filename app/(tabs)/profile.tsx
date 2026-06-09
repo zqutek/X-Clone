@@ -1,4 +1,4 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Image } from "expo-image";
@@ -36,7 +36,6 @@ function NoPostsFound() {
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { user } = useUser();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
   const [editVisible, setEditVisible] = useState(false);
@@ -44,10 +43,7 @@ export default function ProfileScreen() {
   const [bio, setBio] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const profile = useQuery(
-    api.users.getUserByClerkId,
-    isAuthenticated && user?.id ? { clerkId: user.id } : "skip"
-  );
+  const profile = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : "skip");
   const posts = useQuery(api.posts.getPostsByUser, isAuthenticated ? {} : "skip");
   const updateProfile = useMutation(api.users.updateProfile);
 
