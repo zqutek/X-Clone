@@ -1,3 +1,4 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { fetch } from "expo/fetch";
@@ -12,18 +13,21 @@ import Story from "./Story";
 import StoryViewerModal, { StoryWithAuthor } from "./StoryViewerModal";
 
 export default function StoriesSection() {
-  const { isAuthenticated } = useConvexAuth();
+  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated, isLoading: isConvexAuthLoading } = useConvexAuth();
   const [selectedStory, setSelectedStory] = useState<StoryWithAuthor | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const canUseConvex =
+    isAuthLoaded && isSignedIn && !isConvexAuthLoading && isAuthenticated;
   const stories = useQuery(
     api.stories.getActiveStories,
-    isAuthenticated ? {} : "skip"
+    canUseConvex ? {} : "skip"
   );
   const generateUploadUrl = useMutation(api.posts.generateUploadUrl);
   const createStory = useMutation(api.stories.createStory);
 
   const handleAddStory = async () => {
-    if (isUploading) return;
+    if (isUploading || !canUseConvex) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -68,6 +72,7 @@ export default function StoriesSection() {
         ListHeaderComponent={
           <TouchableOpacity
             activeOpacity={0.8}
+            disabled={isUploading || !canUseConvex}
             onPress={handleAddStory}
             style={styles.storyContainer}
           >

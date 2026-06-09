@@ -1,6 +1,6 @@
-import { useUser } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import { fetch } from "expo/fetch";
 import { File } from "expo-file-system";
 import { Image } from "expo-image";
@@ -19,17 +19,22 @@ import {
 } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { COLORS } from "../../constants/theme";
+import Loader from "../../components/Loader";
 import { styles } from "../../styles/create.styles";
 
 export default function CreateScreen() {
   const router = useRouter();
+  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
+  const { isAuthenticated, isLoading: isConvexAuthLoading } = useConvexAuth();
   const [caption, setCaption] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
 
   const generateUploadUrl = useMutation(api.posts.generateUploadUrl);
   const createPost = useMutation(api.posts.createPost);
+  const canUseConvex =
+    isAuthLoaded && isSignedIn && !isConvexAuthLoading && isAuthenticated;
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -45,7 +50,7 @@ export default function CreateScreen() {
   };
 
   const handleShare = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage || !canUseConvex) return;
 
     try {
       setIsSharing(true);
@@ -80,6 +85,10 @@ export default function CreateScreen() {
       setIsSharing(false);
     }
   };
+
+  if (!isAuthLoaded || isConvexAuthLoading) {
+    return <Loader />;
+  }
 
   if (!selectedImage) {
     return (
@@ -123,9 +132,12 @@ export default function CreateScreen() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>New Post</Text>
           <TouchableOpacity
-            disabled={isSharing || !selectedImage}
+            disabled={isSharing || !selectedImage || !canUseConvex}
             onPress={handleShare}
-            style={[styles.shareButton, isSharing && styles.shareButtonDisabled]}
+            style={[
+              styles.shareButton,
+              (isSharing || !canUseConvex) && styles.shareButtonDisabled,
+            ]}
           >
             {isSharing ? (
               <ActivityIndicator size="small" color={COLORS.primary} />

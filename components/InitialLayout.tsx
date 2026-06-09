@@ -1,6 +1,7 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useEffect } from "react";
+import Loader from "./Loader";
 
 export default function InitialLayout() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -23,6 +24,10 @@ export default function InitialLayout() {
       router.replace("/(auth)/login");
     }
   }, [isLoaded, isSignedIn, router, segments]);
+
+  if (!isLoaded) {
+    return <Loader />;
+  }
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

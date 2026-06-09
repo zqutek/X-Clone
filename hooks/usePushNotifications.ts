@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
@@ -51,10 +51,11 @@ async function registerForPushNotificationsAsync() {
 export default function usePushNotifications() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated, isLoading: isConvexAuthLoading } = useConvexAuth();
   const savePushToken = useMutation(api.users.savePushToken);
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn) return;
+    if (!isLoaded || !isSignedIn || isConvexAuthLoading || !isAuthenticated) return;
 
     let isMounted = true;
 
@@ -71,7 +72,13 @@ export default function usePushNotifications() {
     return () => {
       isMounted = false;
     };
-  }, [isLoaded, isSignedIn, savePushToken]);
+  }, [
+    isAuthenticated,
+    isConvexAuthLoading,
+    isLoaded,
+    isSignedIn,
+    savePushToken,
+  ]);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(
