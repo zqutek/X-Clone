@@ -1,8 +1,6 @@
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation } from "convex/react";
-import { fetch } from "expo/fetch";
-import { File } from "expo-file-system";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -56,14 +54,15 @@ export default function CreateScreen() {
       setIsSharing(true);
 
       const uploadUrl = await generateUploadUrl();
-      const file = new File(selectedImage);
+      const imageResponse = await fetch(selectedImage);
+      const imageBlob = await imageResponse.blob();
 
       const uploadResponse = await fetch(uploadUrl, {
         method: "POST",
         headers: {
-          "Content-Type": file.type || "image/jpeg",
+          "Content-Type": imageBlob.type || "image/jpeg",
         },
-        body: file,
+        body: imageBlob,
       });
 
       if (!uploadResponse.ok) {

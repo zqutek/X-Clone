@@ -1,8 +1,6 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { fetch } from "expo/fetch";
-import { File } from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -41,14 +39,15 @@ export default function StoriesSection() {
     try {
       setIsUploading(true);
       const uploadUrl = await generateUploadUrl();
-      const file = new File(result.assets[0].uri);
+      const imageResponse = await fetch(result.assets[0].uri);
+      const imageBlob = await imageResponse.blob();
 
       const uploadResponse = await fetch(uploadUrl, {
         method: "POST",
         headers: {
-          "Content-Type": file.type || "image/jpeg",
+          "Content-Type": imageBlob.type || "image/jpeg",
         },
-        body: file,
+        body: imageBlob,
       });
 
       if (!uploadResponse.ok) throw new Error("Story upload failed");
