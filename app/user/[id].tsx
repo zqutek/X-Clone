@@ -49,6 +49,25 @@ export default function UserProfileScreen() {
   const getOrCreateConversation = useMutation(api.chat.getOrCreateConversation);
 
   useEffect(() => {
+    console.log("[profile-debug] user/[id] getUserProfile args", {
+      routeId: id,
+      userId,
+      isAuthenticated,
+    });
+  }, [id, isAuthenticated, userId]);
+
+  useEffect(() => {
+    console.log("[profile-debug] user/[id] getUserProfile result", {
+      userId,
+      state:
+        profile === undefined ? "loading" : profile === null ? "null" : "found",
+      convexUserId: profile?._id,
+      clerkId: profile?.clerkId,
+      email: profile?.email,
+    });
+  }, [profile, userId]);
+
+  useEffect(() => {
     if (profile?.clerkId && profile.clerkId === user?.id) {
       router.replace("/(tabs)/profile");
     }

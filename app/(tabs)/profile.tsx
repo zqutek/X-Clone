@@ -46,9 +46,46 @@ export default function ProfileScreen() {
   const [isEnsuringProfile, setIsEnsuringProfile] = useState(false);
 
   const profile = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : "skip");
+  const profileByClerkId = useQuery(
+    api.users.getUserByClerkId,
+    isAuthenticated && user?.id ? { clerkId: user.id } : "skip"
+  );
   const posts = useQuery(api.posts.getPostsByUser, profile ? {} : "skip");
   const createAuthenticatedUser = useMutation(api.users.createAuthenticatedUser);
   const updateProfile = useMutation(api.users.updateProfile);
+
+  useEffect(() => {
+    console.log("[profile-debug] Clerk useUser", {
+      isUserLoaded,
+      clerkUserId: user?.id,
+      email: user?.primaryEmailAddress?.emailAddress,
+    });
+  }, [isUserLoaded, user?.id, user?.primaryEmailAddress?.emailAddress]);
+
+  useEffect(() => {
+    console.log("[profile-debug] api.users.getCurrentUser result", {
+      state:
+        profile === undefined ? "loading" : profile === null ? "null" : "found",
+      convexUserId: profile?._id,
+      clerkId: profile?.clerkId,
+      email: profile?.email,
+    });
+  }, [profile]);
+
+  useEffect(() => {
+    console.log("[profile-debug] api.users.getUserByClerkId result", {
+      clerkUserId: user?.id,
+      state:
+        profileByClerkId === undefined
+          ? "loading"
+          : profileByClerkId === null
+            ? "null"
+            : "found",
+      convexUserId: profileByClerkId?._id,
+      clerkId: profileByClerkId?.clerkId,
+      email: profileByClerkId?.email,
+    });
+  }, [profileByClerkId, user?.id]);
 
   useEffect(() => {
     if (!isAuthenticated || !isUserLoaded || !user || profile !== null) return;
@@ -124,6 +161,20 @@ export default function ProfileScreen() {
   }
 
   if (!profile) {
+    console.log("[profile-debug] Profile not found branch", {
+      isAuthenticated,
+      isUserLoaded,
+      clerkUserId: user?.id,
+      getCurrentUserState:
+        profile === undefined ? "loading" : profile === null ? "null" : "found",
+      getUserByClerkIdState:
+        profileByClerkId === undefined
+          ? "loading"
+          : profileByClerkId === null
+            ? "null"
+            : "found",
+    });
+
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>

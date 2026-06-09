@@ -14,6 +14,13 @@ export default function useEnsureConvexUser() {
   const lastCreatedClerkId = useRef<string | null>(null);
 
   useEffect(() => {
+    console.log("[profile-debug] useEnsureConvexUser state", {
+      isLoaded,
+      isAuthenticated,
+      clerkUserId: user?.id,
+      email: user?.primaryEmailAddress?.emailAddress,
+    });
+
     if (!isLoaded || !isAuthenticated || !user) return;
     if (lastCreatedClerkId.current === user.id) return;
 
@@ -27,9 +34,16 @@ export default function useEnsureConvexUser() {
       fullname: user.fullName || user.username || getUsername(email, user.id),
       image: user.imageUrl,
       username: user.username || getUsername(email, user.id),
-    }).catch((error) => {
-      lastCreatedClerkId.current = null;
-      console.error("Error ensuring Convex user:", error);
-    });
+    })
+      .then((convexUserId) => {
+        console.log("[profile-debug] createAuthenticatedUser result", {
+          clerkUserId: user.id,
+          convexUserId,
+        });
+      })
+      .catch((error) => {
+        lastCreatedClerkId.current = null;
+        console.error("Error ensuring Convex user:", error);
+      });
   }, [createAuthenticatedUser, isAuthenticated, isLoaded, user]);
 }
