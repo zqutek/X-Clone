@@ -28,6 +28,7 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Continue with Google</Text>
       </TouchableOpacity>
+      <View nativeID="clerk-captcha" style={styles.captcha} />
     </View>
   );
 }

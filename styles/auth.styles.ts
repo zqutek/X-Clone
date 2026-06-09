@@ -25,4 +25,7 @@ export const authStyles = StyleSheet.create({
     color: COLORS.text,
     fontWeight: "600",
   },
+  captcha: {
+    marginTop: 12,
+  },
 });

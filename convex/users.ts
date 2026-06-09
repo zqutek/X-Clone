@@ -3,15 +3,31 @@ import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 
-export async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
+async function findUserForIdentity(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Unauthorized");
+  if (!identity) return null;
 
-  const currentUser = await ctx.db
+  const bySubject = await ctx.db
     .query("users")
     .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
     .first();
 
+  if (bySubject) return bySubject;
+
+  if (identity.email) {
+    const users = await ctx.db.query("users").collect();
+    const byEmail = users.find((user) => user.email === identity.email);
+    if (byEmail) return byEmail;
+  }
+
+  return null;
+}
+
+export async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error("Unauthorized");
+
+  const currentUser = await findUserForIdentity(ctx);
   if (!currentUser) throw new Error("User not found");
 
   return currentUser;
@@ -60,10 +76,7 @@ export const createAuthenticatedUser = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
-    const existingUser = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-      .first();
+    const existingUser = await findUserForIdentity(ctx);
 
     if (existingUser) return existingUser._id;
 
@@ -95,13 +108,7 @@ export const getUserByClerkId = query({
 
 export const getCurrentUser = query({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    return await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-      .first();
+    return await findUserForIdentity(ctx);
   },
 });
 

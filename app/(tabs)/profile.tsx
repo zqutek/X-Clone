@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Image } from "expo-image";
@@ -36,16 +36,47 @@ function NoPostsFound() {
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useAuth();
+  const { user, isLoaded: isUserLoaded } = useUser();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
   const [editVisible, setEditVisible] = useState(false);
   const [fullname, setFullname] = useState("");
   const [bio, setBio] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isEnsuringProfile, setIsEnsuringProfile] = useState(false);
 
   const profile = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : "skip");
-  const posts = useQuery(api.posts.getPostsByUser, isAuthenticated ? {} : "skip");
+  const posts = useQuery(api.posts.getPostsByUser, profile ? {} : "skip");
+  const createAuthenticatedUser = useMutation(api.users.createAuthenticatedUser);
   const updateProfile = useMutation(api.users.updateProfile);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isUserLoaded || !user || profile !== null) return;
+
+    const email = user.primaryEmailAddress?.emailAddress;
+    if (!email || isEnsuringProfile) return;
+
+    setIsEnsuringProfile(true);
+    createAuthenticatedUser({
+      email,
+      fullname: user.fullName || user.username || email.split("@")[0],
+      image: user.imageUrl,
+      username: user.username || email.split("@")[0],
+    })
+      .catch((error) => {
+        console.error("Error creating missing profile:", error);
+      })
+      .finally(() => {
+        setIsEnsuringProfile(false);
+      });
+  }, [
+    createAuthenticatedUser,
+    isAuthenticated,
+    isEnsuringProfile,
+    isUserLoaded,
+    profile,
+    user,
+  ]);
 
   useEffect(() => {
     if (profile) {
@@ -83,7 +114,12 @@ export default function ProfileScreen() {
     });
   };
 
-  if (isLoading || (isAuthenticated && (profile === undefined || posts === undefined))) {
+  if (
+    isLoading ||
+    isEnsuringProfile ||
+    (isAuthenticated && profile === undefined) ||
+    (profile && posts === undefined)
+  ) {
     return <Loader />;
   }
 
