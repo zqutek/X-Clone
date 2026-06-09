@@ -35,7 +35,7 @@ function NoPostsFound() {
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { isLoaded: isAuthLoaded, isSignedIn, signOut } = useAuth();
   const { user, isLoaded: isUserLoaded } = useUser();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
@@ -45,11 +45,30 @@ export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [isEnsuringProfile, setIsEnsuringProfile] = useState(false);
 
-  const profile = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : "skip");
-  const profileByClerkId = useQuery(
-    api.users.getUserByClerkId,
-    isAuthenticated && user?.id ? { clerkId: user.id } : "skip"
+  const shouldLoadProfile = isAuthLoaded && isSignedIn && isAuthenticated;
+  const hasClerkIdForFallback = shouldLoadProfile && !!user?.id;
+  const currentUser = useQuery(
+    api.users.getCurrentUser,
+    shouldLoadProfile ? {} : "skip"
   );
+  const userByClerkId = useQuery(
+    api.users.getUserByClerkId,
+    hasClerkIdForFallback ? { clerkId: user.id } : "skip"
+  );
+  const profile = currentUser ?? userByClerkId;
+  const isCurrentUserLoading = shouldLoadProfile && currentUser === undefined;
+  const isUserByClerkIdLoading =
+    hasClerkIdForFallback && userByClerkId === undefined;
+  const isProfileLookupLoading =
+    !profile && (isCurrentUserLoading || isUserByClerkIdLoading);
+  const profileLookupsFinished =
+    shouldLoadProfile &&
+    currentUser !== undefined &&
+    (!hasClerkIdForFallback || userByClerkId !== undefined);
+  const profileNotFound =
+    profileLookupsFinished &&
+    currentUser === null &&
+    (!hasClerkIdForFallback || userByClerkId === null);
   const posts = useQuery(api.posts.getPostsByUser, profile ? {} : "skip");
   const createAuthenticatedUser = useMutation(api.users.createAuthenticatedUser);
   const updateProfile = useMutation(api.users.updateProfile);
@@ -57,38 +76,50 @@ export default function ProfileScreen() {
   useEffect(() => {
     console.log("[profile-debug] Clerk useUser", {
       isUserLoaded,
+      isAuthLoaded,
+      isSignedIn,
       clerkUserId: user?.id,
       email: user?.primaryEmailAddress?.emailAddress,
     });
-  }, [isUserLoaded, user?.id, user?.primaryEmailAddress?.emailAddress]);
+  }, [
+    isAuthLoaded,
+    isSignedIn,
+    isUserLoaded,
+    user?.id,
+    user?.primaryEmailAddress?.emailAddress,
+  ]);
 
   useEffect(() => {
     console.log("[profile-debug] api.users.getCurrentUser result", {
       state:
-        profile === undefined ? "loading" : profile === null ? "null" : "found",
-      convexUserId: profile?._id,
-      clerkId: profile?.clerkId,
-      email: profile?.email,
+        currentUser === undefined
+          ? "loading"
+          : currentUser === null
+            ? "null"
+            : "found",
+      convexUserId: currentUser?._id,
+      clerkId: currentUser?.clerkId,
+      email: currentUser?.email,
     });
-  }, [profile]);
+  }, [currentUser]);
 
   useEffect(() => {
     console.log("[profile-debug] api.users.getUserByClerkId result", {
       clerkUserId: user?.id,
       state:
-        profileByClerkId === undefined
+        userByClerkId === undefined
           ? "loading"
-          : profileByClerkId === null
+          : userByClerkId === null
             ? "null"
             : "found",
-      convexUserId: profileByClerkId?._id,
-      clerkId: profileByClerkId?.clerkId,
-      email: profileByClerkId?.email,
+      convexUserId: userByClerkId?._id,
+      clerkId: userByClerkId?.clerkId,
+      email: userByClerkId?.email,
     });
-  }, [profileByClerkId, user?.id]);
+  }, [userByClerkId, user?.id]);
 
   useEffect(() => {
-    if (!isAuthenticated || !isUserLoaded || !user || profile !== null) return;
+    if (!shouldLoadProfile || !isUserLoaded || !user || !profileNotFound) return;
 
     const email = user.primaryEmailAddress?.emailAddress;
     if (!email || isEnsuringProfile) return;
@@ -108,10 +139,10 @@ export default function ProfileScreen() {
       });
   }, [
     createAuthenticatedUser,
-    isAuthenticated,
     isEnsuringProfile,
     isUserLoaded,
-    profile,
+    profileNotFound,
+    shouldLoadProfile,
     user,
   ]);
 
@@ -152,25 +183,33 @@ export default function ProfileScreen() {
   };
 
   if (
+    !isAuthLoaded ||
+    !isUserLoaded ||
     isLoading ||
     isEnsuringProfile ||
-    (isAuthenticated && profile === undefined) ||
+    isProfileLookupLoading ||
     (profile && posts === undefined)
   ) {
     return <Loader />;
   }
 
-  if (!profile) {
+  if (profileNotFound) {
     console.log("[profile-debug] Profile not found branch", {
       isAuthenticated,
+      isAuthLoaded,
+      isSignedIn,
       isUserLoaded,
       clerkUserId: user?.id,
       getCurrentUserState:
-        profile === undefined ? "loading" : profile === null ? "null" : "found",
-      getUserByClerkIdState:
-        profileByClerkId === undefined
+        currentUser === undefined
           ? "loading"
-          : profileByClerkId === null
+          : currentUser === null
+            ? "null"
+            : "found",
+      getUserByClerkIdState:
+        userByClerkId === undefined
+          ? "loading"
+          : userByClerkId === null
             ? "null"
             : "found",
     });
@@ -183,6 +222,10 @@ export default function ProfileScreen() {
         </View>
       </View>
     );
+  }
+
+  if (!profile) {
+    return <Loader />;
   }
 
   const renderHeader = () => (
