@@ -28,6 +28,24 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="search" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="bookmarks"
+        options={{
+          title: "Bookmarks",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="bookmark-border" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="create"
         options={{
           title: "Create",
@@ -42,15 +60,6 @@ export default function TabsLayout() {
           title: "Notifications",
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="notifications-none" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="bookmarks"
-        options={{
-          title: "Bookmarks",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="bookmark-border" color={color} size={size} />
           ),
         }}
       />

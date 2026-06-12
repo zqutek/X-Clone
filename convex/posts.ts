@@ -129,6 +129,41 @@ export const getPostsByUser = query({
   },
 });
 
+export const getPostById = query({
+  args: {
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const currentUser = await getAuthenticatedUser(ctx);
+    const post = await ctx.db.get(args.postId);
+    if (!post) return null;
+
+    const author = await ctx.db.get(post.userId);
+    if (!author) return null;
+
+    const like = await ctx.db
+      .query("likes")
+      .withIndex("by_user_and_post", (q) =>
+        q.eq("userId", currentUser._id).eq("postId", post._id)
+      )
+      .first();
+
+    const bookmark = await ctx.db
+      .query("bookmarks")
+      .withIndex("by_both", (q) =>
+        q.eq("userId", currentUser._id).eq("postId", post._id)
+      )
+      .first();
+
+    return {
+      ...post,
+      author,
+      isLiked: !!like,
+      isBookmarked: !!bookmark,
+    };
+  },
+});
+
 export const toggleLike = mutation({
   args: {
     postId: v.id("posts"),

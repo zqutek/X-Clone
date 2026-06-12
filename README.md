@@ -23,11 +23,13 @@ Starter mobile app for an X / Twitter clone built with React Native, Expo Router
 - Like, bookmark, comment, and delete-post interactions backed by Convex
 - Notifications created for likes and comments on another user's post
 - Bookmarks tab with a 3-column grid of saved posts
+- Explore tab with popular posts, user search, caption/hashtag search, and follow buttons
 - Notifications tab with enriched like, comment, and follow notifications
 - Cascading post deletion for likes, comments, bookmarks, and related notifications
 - Editable Profile tab with avatar, stats, bio, posts grid, post preview modal, and profile edit modal
 - User profile pages for other users with follow/unfollow and posts grid
 - Profile links from post authors and notification senders
+- Post detail route for opening posts from Explore
 - Real stories backed by Convex storage with upload, active story list, viewer modal, progress bar, and view counter
 - Real-time chat with conversation list, one-to-one message screen, and Message buttons on user profiles
 - Push notifications for likes, comments, and follows using expo-notifications, Convex actions, and Expo Push Service
@@ -111,6 +113,7 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 - To test posting, open the Create tab, select an image, add an optional caption, press Share, and check the `posts` table in Convex Dashboard.
 - To test the feed, create at least one post and use the Feed tab to like, bookmark, comment, or delete your own post.
 - To test bookmarks, tap the bookmark icon on a post and open the Bookmarks tab.
+- To test Explore, open the Explore tab, browse popular posts, search for a username/name or hashtag, follow a user, and tap a grid post to open its detail page.
 - To test notifications, like or comment on another user's post and open the Notifications tab from that user's account.
 - To test your profile, open the Profile tab, edit name/bio, and tap a grid post to preview it.
 - To test user profiles, tap a post author's avatar or a notification sender avatar, then use Follow/Following.
